@@ -1,3 +1,7 @@
+# Shogi server
+.image-*
+
+# Ruby
 *.gem
 *.rbc
 /.config

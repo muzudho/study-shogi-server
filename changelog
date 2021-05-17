@@ -1,0 +1,1477 @@
+2020-12-06  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Improve timed-up detection (continued).
+	  The server now checks timed up when it receives a-single-space keep
+	  alive messages as well.
+	  Thanks to mizar for reports and patches.
+	  (Closes #40821)
+	* [shogi-server] Support listening on IPv6 addresses
+	  Thanks to mizar for a patch.
+	  (Closes #40822)
+	* [shogi-server] Make invalid comments illegal
+	  Some client sent moves with comments in an invalid format like
+	  "+7776FU '* 30 -3334FU +2726FU". Such messages are now deemed
+	  illegal.
+	  Thanks to mizar for a report.
+	* [shogi-server] Bump up the revision to 20201206
+
+2020-10-04  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Improve timed-up detection.
+	  Previously, the server checked if a game got timed up when a player
+	  in turn sent no message for a certain amount of time mainly defined
+	  by Default_Timeout. If the player sent keep alive frequently, the
+	  timed-up detection could be quite delayed.
+	  This issue has been addressed. The server now checks timed up with
+	  keep alive received as well. Players are notified with TIME_UP not
+	  long before games gets timed up.
+
+2018-08-25  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Support a graceful shutdown.
+	  A file named "STOP" in the base directory prevents the server from
+	  starting new games including Floodgate matches.
+	  (Closes #38544)
+	* [shogi-server] Create a directory for a PID file.
+	  To put a PID file such as /var/run/shogi-server/shogi-server.pid, if
+	  directories do not exist, they will be created recursively.
+	  (Closes #38546)
+
+2018-04-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Give more penalty on assigning matches with same
+	  players.
+	  (Closes #38178)
+
+2017-09-03  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Write game results in categorical files
+	  The shogi-server now writes down game results in the following
+	  files, depending on a game class:
+	  - 00LIST: all games
+	  - 00LIST.floodgate: floodgate games
+	  - 00LIST.others: non-floodgate games
+	  (Closes  #37492)
+
+2017-09-02  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Write more game results in record files
+	  As the CSA Record Format standard states, "%TIME_UP" and
+	  "%SENNICHITE" are now recorded in CSA files when a game ends for
+	  timed up or sennichite respectively.
+	  (Closes #37490)
+	* [shogi-server, mk_game_results, mk_rate] Change schema to add number of
+	  moves The format of an internal game result summary file, '00LIST',
+	  has been changed to add number of moves of a game, which would be of
+	  help for a script calculating rating scores.
+	  (Closes #37491)
+	* Update Revision to 20170902
+
+2017-02-26 Daigo Moriwaki <daigo at debian dot org>
+
+	* utils/csa-filter.rb: Allow csa-filter.rb to filter games by a winner or loser
+	  New command lines, --winner <player> or --loser <player>, are now
+	  supported to supply extra filtering conditions. Note that each
+	  filter is combined as AND condition.
+	  E.g.
+	  - % ./csa-filter.rb ~/Downloads/20160314 --white gpsfish_xeon --loser gpsfish_xeon
+	  - % ./csa-filter.rb ~/Downloads/20160314 --white gpsfish_xeon --winner gpsfish_xeon
+	  (Closes #37023)
+
+2016-12-11  Daigo Moriwaki <daigo at debian dot org>
+
+	* Update Revision to 20161211.
+	* Fix Dockerfile.
+
+2016-12-09  Daigo Moriwaki <daigo at debian dot org>
+
+	* Allow util/statistics.rb to set a filtering condition of found files
+	  Regarding util/statistics.rb, add a new command line option,
+	  --filter regexp, to process files that are matched with a regexp.
+	  It would make it easier to calculate statistics of certain games.
+	  (Closes #36855)
+
+2016-11-26  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Allow to customize maximum lenght of a login indentifier
+	  (Closes #36821)
+	  - The current maximum length of a login identifier is 32. Some
+	    private uses require longer player names to distinguish each other
+	    by specifying randomly generated tokens. It would of help to add a
+	    new command line option --max-identifier to overwrite the default
+	    maximum length.
+	* Build a Docker image for Shogi-server
+	  (Closes #36822)
+	  - Build a Docker image
+	      % make image-build
+	  - Running a local shogi-server would look like
+	      % docker pull shogiserver/shogiserver
+	      % docker run -p 4081:4081 -v `pwd`/logs:/logs shogiserver/shogiserver
+	* [shogi-server] shogi_server/game.rb:
+	  - Remove a debug message
+
+2016-04-09  Daigo Moriwaki <daigo at debian dot org>
+
+	* utils/eval_graph.rb
+	  - Support Fischer time control.
+	* [shogi-server] Bump up the revision to 20160409.
+
+2016-04-02  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Support Fischer Time Control
+	  (Closes #36230)
+	  - Fischer time control means that:
+	    Before a player has made their move, a specified time increment is
+	    added to their clock. Time can be accumulated, so if the player
+	    moves within the delay period, their remaining time actually
+	    increases.
+	    (https://en.wikipedia.org/wiki/Chess_clock)
+	  - New syntax of game names:
+	    An 'F' suffix denotes a Fisher time in seconds. For example,
+	    "floodgate-600-10F" specifies
+	      + A floodgate game
+	      + Total allotted time is 600 seconds for each player
+	      + 10-second increment before a player's move in a Fischer way
+	  - The server now proposes game conditions upon a game start with
+	    - "Protocol_Version 1.2"
+	    - "Increment:<n>" for Fischer Time Control
+	  - Kifu files can include the following comment for Fischer Time
+	    Control:
+	    - "'Increment:<n>"
+	* [shogi-server] Fix some lint warnings.
+
+2015-12-13  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Enhance capability of Floodgate configuration file
+	  - New parameter: Max_Moves, defined in the CSA protocol
+	    ex. set Max_Moves 256
+	  - New parameter: Least_Time_Per_Move, defined in the CSA protocol
+	    ex. set Least_Time_Per_Move 0
+	  - Proposed messages distributed to each player upon starting a new
+	    game will include Max_Moves as well as Least_Time_Per_Move.
+	  - CSA files produced by the server will include settings of
+	    Max_Moves and Least_Time_Per_Move in comment lines as follows:
+	      'Max_Moves:256
+	      'Least_Time_Per_Move:0
+	  - The official Shogi-server on wdoor.c.u-tokyo.ac.jp will
+	    be running with different parameters, depending on game names.
+	    a) Max_Moves will be 256 for floodgate-600-10 games;
+	       otherwise, 0.
+	    b) Least_Time_Per_Move will be 0 for floodgate-600-10 games;
+	       otherwise 1.
+	  (Closes: #35839)
+	* [shogi-server] shogi_server/pairing.rb:
+	  - LeastDiff attempts more trials, depending of a number of players
+	    to be matched, top achieve more optimized matching combinations.
+
+2015-11-27  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] shogi_server/time_clock.rb:
+	  - A time consumed could be -1.
+	    * The start time of a move is captured after sending a move to a
+	      player of the next turn at the end of the giant lock
+	    * The end time of the move is captured at the exact time when the
+	      server receives it before the giant lock
+	    Therefore, end_time < start_time is possible when a player returns a
+	    move instantly.
+	    Thanks to Tomoyuki Kaneko for reporting this issue.
+	    (Closes: #35795)
+
+2015-02-14  Daigo Moriwaki <daigo at debian dot org>
+
+	* util/statistics.rb:
+	  - Updated to investigate floodgate-600-10 games.
+	    Consult the result at
+	    http://www.sgtpepper.net/hyspro/diary/20150214.html.
+	  - Added a companion R script: histogram.R 
+
+2015-02-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/login.rb: When players are logged in, log their
+	    player_id if they have it.
+
+2015-01-20  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Getting an absolute path of this file was wrong if it was a
+	    symbolic link. This issue has been addressed.
+	* [mk_html]
+	  - Links to details pages for players now use a relative path so
+	    that it works on a testing site.
+
+2015-01-17  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi-server, shogi_server/{command,game_result,player}.rb:
+	    The change at 2014-10-13 was not worked as expected. Reworked.
+	    A player, attempting to login with the current live player
+	    stalling for more than a day, can forcibly override the current
+	    player.
+
+2015-01-12  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server.rb: Follow an API change in a upstream class:
+	    LogDevice.previous_period_end
+
+2014-12-27  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - When a non-rated player participates in Floodgate, the following exception
+	    was thrown and a Floodgate game would not start:
+	      undefined method `[]' for nil:NilClass
+	      ["/home/shogi-server/www/x/shogi_server/pairing.rb:499:in `block
+	      in calculate_diff_with_penalty'"
+	    This issue has been resolved. Only players who have player ID
+	    (i.e. those who log in with valid password) are now allowed to
+	    participate in Floodgate as the spec web page
+	    [http://shogi-server.sourceforge.jp/rating.html] describes.
+
+2014-12-23  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Addressed Ruby incompatibility on ShogiServer::Usi::alphabetToDan.
+	    It (and usiToCsa.rb) did not work with Ruby 1.9.3. This issue
+	    has now been fixed.
+	    Thanks to Hiraoka-san for debugging.
+
+2014-12-18  Daigo Moriwaki <daigo at debian dot org>
+
+	* utils/eval_graph.rb:
+	  - Gnuplot 4.6.6 drew evaluation-value lines with a dashed style.
+	    This issue has now been addressed so that solid lines are used.
+
+2014-11-30  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	  - Corrected a url.
+
+2014-11-24  Daigo Moriwaki <daigo at debian dot org>
+
+	* Ruby 2.0:
+	  - Ruby 2.0.0 or later is recommended to use with shogi-server
+	    since Ruby 1.8 reached its End-of-Life on the end of July, 2014.
+	* [shogi-server]
+	  - Addressed a warning of duplicated range in a regular expression.
+
+2014-10-13  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A player, attempting to login with the current live player
+	    stalling for more than a day, can forcibly override the current
+	    player.
+	  - Kifu record files now includes rating scores of players at the
+	    time when games start.  Previously, for rating games, a record
+	    file includes player IDs of both players with a line starting with
+	    "'rating".  Now it also shows rating scores for players who have
+	    valid scores.  The formats for black and white players are as
+	    follows:
+	      'black_rate:<player_id>:<score>
+	      'white_rate:<player_id>:<score>
+	    A sample output:
+	      'rating:Test_sente+275876e34cf609db118f3d84b799a790:Test_gote+275876e34cf609db118f3d84b799a790
+	      'black_rate:Test_sente+275876e34cf609db118f3d84b799a790:2763.0
+	      'white_rate:Test_gote+275876e34cf609db118f3d84b799a790:2345.0
+
+2014-10-12  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi_server]
+	  - New feature: max moves
+	    - New command line option: --max-moves n
+	      When a game with the n-th move played does not end, make the
+	      game a draw (default 256 in compliance with CSA Protocol V1.2
+	      or later).  Setting 0 disables this feature for
+	      CSA Protocol V1.1.2 or before.
+	    - Players will receive a new message, "#MAX_MOVES", upon an end
+	      of such a game:
+	        #MAX_MOVES
+	        #CENSORED
+	    - A new log summary type, "max_moves", has been assigned for games
+	      drawing with max moves.
+	      'summary:max_moves:name_sente draw:name_gote draw
+	  - Least time per move:
+	    - New command line option: --least-time-per-move n
+	      This option specifies a least time in second per move, which
+	      is 0 second by default, meaning that a decimal
+	      fraction of time for a move will be truncated in compliance
+	      with CSA Protocol V1.2 or later.
+	      Set 1 for CSA Protocol V1.1.2 or before.
+
+2014-07-19  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Added a new option, --abnormal-threshold n:
+	    Games that end with the 'abnormal' status are counted in
+	    win/lost games for the rating calculation if a game plays more
+	    than n plies. Otherwise (or if n is zero), abnormal games are
+	    counted out of rating games.
+
+2014-01-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Released: Revision "20140107"
+
+2013-12-29  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Previously, parameters in Floodgate time configuration file were
+	    not applied to actual instances. This issue has been fixed.
+
+2013-12-21  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/pairing.rb: Impose penalty on matches between
+	    likely kin players.
+
+2013-12-15  Daigo Moriwaki <daigo at debian dot org>
+
+	* [webserver]
+	  - Listen on only IPv4 explicitly. Under ruby 1.9.3p194, without
+	    any bind addresses, ruby attempts to listen on both "0.0.0.0"
+	    and "::". Specifying "::" on Linux leads to listen on both IPv4
+	    and IPv6, which results in a warning message saying "Address
+	    already in use - bind(2)".
+	* [shogi-server]
+	  - Released: Revision "20131215"
+
+2013-12-14  Daigo Moriwaki <daigo at debian dot org>
+
+	* [usiToCsa]
+	  - Added a new program, bin/usiToCsa.rb, which is a bridge for a
+	    USI engine to connect to the Shogi-server.
+	  - bin/usiToCsa is a sample wrapper script.
+
+2013-12-13  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/league/floodgate_thread.rb:
+	    - Added a log message.
+
+2013-12-08  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi-server/shogi_server/pairing.rb:
+	    - Modified comment for LeastDiff match.
+	    - Changed log messages and levels. 
+
+2013-12-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/pairing.rb, player.rb:
+	    Simplify estimated rate of unrated players (less memory).
+	  - Enhanced syntax of Floodgate time configuration file.
+	    Now it supports "set sacrifice <player_id>"; it sets a
+	    sacrificed player for a specific Floodgate game.
+	    ex. set sacrifice gps500+e293220e3f8a3e59f79f6b0efffaa931
+
+2013-12-05  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added a new pairing method, ShogiServer::ExcludeUnratedPlayers,
+	    which filters out unrated players.
+	  - Enhanced syntax of Floodgate time configuration file.
+	    Now it supports "set pairing_factory <function_name>"; it sets a
+	    factory function name generating a pairing method which will be
+	    used in a specific Floodgate game.
+	    ex. set pairing_factory floodgate_zyunisen 
+	  - Implemented conversion of move representation between CSA format
+	    and USI one.
+
+2013-11-24  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/league/floodgate.rb: Improved robustness against
+	    empty file under ruby 1.9.3p194
+	  - shogi-server:
+	    - Previously, reloading in daemon mode failed on
+	      ruby 1.9.3p194. This issue has been fixed.
+	    - Listen on only IPv4 explicitly. Under ruby 1.9.3p194, without
+	      any bind addresses, ruby attempts to listen on both "0.0.0.0"
+	      and "::". Specifying "::" on Linux leads to listen on both IPv4
+	      and IPv6, which results in a warning message saying "Address
+	      already in use - bind(2)".
+	* [mk_game_results]
+	  - Fixed for reading Japanese comments under ruby1.9.3p194.
+	* mk_rate-from-grep, mk_rate-grep:
+	  - Removed files that are no longer used.
+
+2013-11-23  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - gsl library may be provided as a gem
+	  - Now duplicated inputs are checked and skipped.
+	* test/TC_floodgate.rb
+	  - Improved randomness check so that it works on Ruby 2.0.0 as well
+
+2013-11-04  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Added a new option, --ignore, which is imported from
+	    mk_rate-from-grep.
+	* [mk_game_results]
+	  - Flush after each output line.
+	* Rleased: Revision "20131104"
+
+2013-09-08  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/{game,time_clock}.rb:
+	    When StopWatchClock is used, "Time_Unit:" of starting messages
+	    in CSA protocol supplies "1min".
+
+2013-04-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/{game,time_clock}.rb:
+	    Adds variations of thinking time calculation: ChessClock
+	    (current) and StopWatchClock (new).
+	    StopWatchClock, which is usually used at official games of human
+	    professional players, is a clock where thiking time less than a
+	    miniute is regarded as zero.
+	    To select StopWatchClock, use a special game name with "060"
+	    byoyomi time. ex. "gamename_1500_060".
+
+2013-03-31  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - %%FORK command: %%FORK <source_game> [<new_buoy_game>] [<nth-move>]
+	    The new_buoy_game parameter is now optional. If it is not
+	    supplied, Shogi-server generates a new buoy game name from
+	    source_game.
+	  - command.rb: More elaborate error messages for the %%GAME command.
+
+2013-03-20  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - New pairing algorithm: ShogiServer::Pairing::LeastDiff
+	    This pairing algorithm aims to minimize the total differences of
+	    matching players' rates. It also includes penalyties when a match
+	    is same as the previous one or a match is between human players.
+	    It is based on a discussion with Yamashita-san on
+	    http://www.sgtpepper.net/kaneko/diary/20120511.html.
+
+2013-02-23  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - New command: %%FORK <source_game> <new_buoy_game> [<nth-move>]
+	    Fork a new game from the posistion where the n-th (starting from
+	    one) move of a source game is played. The new game should be a
+	    valid buoy game name. The default value of n is the position
+	    where the previous position of the last one.
+	    - The objective of this command: The shogi-server may be used as
+	    the back end server of computer-human match where a human player
+	    plays with a real board and someone, or a proxy, inputs moves to
+	    the shogi-server. If the proxy happens to enter a wrong move,
+	    with this command you can restart a new buoy game from the
+	    previous stable position.
+	    ex. %%FORK server-denou-14400-60+p1+p2+20130223185013 buoy_denou-14400-60
+
+2012-12-30  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Backported a5c94012656902e73e00f46e7a4c7004b24d4578:
+	    test/TC_logger.rb depeneded on a specific directory where it was
+	    running on. This issues has been fixed.
+	  - Backported 87d145bd1f1a14a33f5f6fbc78b63a1952f1ca90 and
+	    2df8c798aeb7f0e77735e893fd1370c2c6f15c4d:
+	    shogi_server/floodgate.rb: Generating next time around the new
+	    year day by reading configuration files did not work correctly.
+	    This issue has been fixed.
+
+2012-12-28  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/pairing.rb:
+	    + There was a bug in the logic avoiding human-human match.
+	      This issue has been fixed.
+	    + Improved the logic avoiding human-human match. Human-human
+	      matches will less likely happen.
+
+2012-01-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added shogi_server/compatible.rb, which implements compatible
+	    methods and allows Ruby 1.8.7 to run the server.
+	  - test/TC_floodgate.rb failed with Ruby 1.8.7. This issue has
+	    been fixed.
+	  - test/TC_uchifuzume.rb did not run with Ruby 1.8.7. This issue
+	    has been fixed.
+	  - test/TC_league.rb failed with Ruby 1.8.7. This issue has been
+	    fixed.
+	* csa-file-filter,mk_game_results,mk_html,mk_rate:
+	  - Updated documents in the command files.
+	    Both Ruby 1.9.3 and 1.8.7 are supported.
+	  - Make their shebang consistent (/usr/bin/ruby1.9.1)
+	* README:
+	  - Both Ruby 1.9.3 and 1.8.7 are supported.
+	* Renewed year of copyright notice in each file.
+
+2012-01-06  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - test/TC_logger.rb depeneded on a specific directory where it was
+	    running on. This issues has been fixed.
+
+2012-01-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/floodgate.rb: Generating next time around the new
+	    year day by reading configuration files did not work correctly.
+	    This issue has been fixed.
+
+2011-12-18  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/board.rb, piece.rb: Refactoring to cache OU pieces,
+	    which was inspired by 81SquareShogi-server's change
+	    (74b24b88c843f1dd767412475b117481d1d5e8eb).
+	  - Added shogi-server-profile to take profile of shogi-server.
+	* [mk_rate] [mk_game_results]
+	  - Supports Ruby 1.9.3.
+
+2011-12-12  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Support Ruby 1.9.3.
+	  - Result of test/benchmark.rb
+	    - Environment:
+	      - CPU: AMD Athlon(tm) 64 X2 Dual Core Processor 4200+  
+	      - RAM: 4GB
+	      - OS: Debian Squeeze
+	      - ruby 1.8.7 (2011-06-30 patchlevel 352) [x86_64-linux]
+	      - ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]
+	    - Server:  ruby1.8 (or ruby1.9.1) ./shogi-server hoge 4000
+	    - Clients: ruby1.8 (or ruby1.9.1) -d ./benchmark.rb
+	      csa/wdoor+floodgate-900-0+gps_normal+gps_l+20100507120007.csa 20
+	    - Scores in seconds: (the smaller, the better)
+	                    clients
+		            1.8.7   1.9.3
+	      server 1.8.7  20 sec  21 sec
+	             1.9.3  26 sec  27 sec
+
+2010-10-06  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - mk_rate: the usage was not updated.
+	    Thanks to Hoki-san to report this issue.  (Closes: #23358)
+
+2010-09-18  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/board.rb, game.rb: For hadicapped games, wrong
+	    initial positions were delivered to players and monitors.  This
+	    issue has been fixed. (Closes: #23245) 
+	    Thanks to HIDETCHI for reporting the issue.
+
+2010-09-05  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/login.rb: Enhanced the CSA Login mode.
+	    Logging in the server with the CSA mode, users are now allowed to
+	    specify a turn preference in an enhanced gamename string which
+	    looks like <gamename>-<time>-<time>-<turn>. The first three 
+	    parts are a regular game definition. The last "-<turn>"
+	    part is optional. 
+	    + Without -<turn> (i.e. same as the previous behavior), there
+	    is no turn preference. A user's turn will be defined randomly. 
+	    + <turn> is either "B" for black or "W" for white.
+
+2010-09-04  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/{board,command,game,league,player}.rb
+	    The Buoy behavior is changed.
+	    + Starting a buoy game, players are notified a starting game
+	      position with the initial position and moves, instead of a
+	      targeting position.
+	    + Players are allowed to start buoy games with specific turns.
+	      ex. %%GAME buoy_foo-1500-0 +
+
+2010-08-05  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb: Prevent a possible password from be
+	    logged in a log file when players send invalid LOGIN-like commands.
+	    Thanks to Tomoyuki Kaneko for this idea.
+
+2010-08-03  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - sample/{check_file.rb,check_time.rb,check_time2.rb,test_time.rb}:
+	    Added new files to test an issue where mtime of log files was
+	    earlier than system time.
+	  - shogi_server/league/floodgate_thread.rb: SetupFloodgate#start
+	    now returns an instance correctly.
+	  - ../shogi_server.rb, ../shogi_server/util.rb: Refactored
+	    mkdir_for to Mkdir.mkdir_for.
+	  - ../shogi_server/game.rb: mkdir_p will be performed in a global
+	    mutex of ShogiServer::Mkdir.
+
+2010-07-25  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb: 
+	    + For an unknown error command log, an empty line is no longer logged.
+	    + Commands specific to 81Dojo, starting with '%%%', are just
+	      ignored instead of unknown command errors.
+	  - shogi_server.rb: 
+	    + Refactoring. Added test/TC_logger.rb to test
+	      ShogiServer::Logger class.
+	    + Fixed race condition: creating a new directory to archive
+	      logs may have caused race condition, which ended up with
+	      making the server unavailable. This issue has been fixed. 
+	  - shogi-server:
+	    + Improved fault tolerance of the server.
+
+2010-07-23  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/league/floodgate_thread.rb: When the server run
+	    with DEBUG mode, it ended up with an undefined variable error. 
+	    This issue has been fixed.
+
+2010-07-17  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server.rb, shogi_server/board.rb, shogi_server/move.rb
+	    - Refactoring: Board can now move_to() and move_back() a move
+	      instead of deep_copy().
+
+2010-07-11  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/player.rb: Set initial values to BasicPlayer's
+	    instance variables.
+	  - shogi_server/league.rb: Improved performance of
+	    Persistant#get_players. It took about 20 seconds for a large
+	    size of players (5,300 lines in players.yaml). Now it completes in an
+	    instance.
+
+2010-06-22  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A new command line option: 
+	      --floodgate-names GameStringA[,GameStringB[,...]]
+	    where a game string should be a valid game name such as
+	    floodgate-900-0.  
+	    .
+	    Note: Without this option, no floodgate games are started. If
+	    you want floodgate-900-0 to run, which was default enabled in
+	    previous versions, you need to specify the game name in this new
+	    option.
+	  - Floodgate time configuration file:
+	    You need to set starting times of floodgate groups in
+	    configuration files under the top directory. Each floodgate
+	    group requires a corresponding configuration file named
+	    "<game_name>.conf". The file will be re-read once just after a
+	    game starts. 
+	    .
+	    For example, a floodgate-3600-30 game group requires
+	    floodgate-3600-30.conf.  However, for floodgate-900-0 and
+	    floodgate-3600-0, which were default enabled in previous
+	    versions, configuration files are optional if you are happy with
+	    default time settings.
+	    File format is:
+	      Line format: 
+	        # This is a comment line
+	        DoW Time
+	        ...
+	      where
+	        DoW := "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" |
+	               "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" |
+	               "Friday" | "Saturday" 
+	        Time := HH:MM
+	     
+	      For example,
+	        Sat 13:00
+	        Sat 22:00
+	        Sun 13:00
+
+2010-06-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb: Fixed an issue that MONITOR2OFF did not
+	    work. Thanks to HIDECHI and koudayu.
+
+2010-05-10  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - test/*.rb: Improved performance and stability of tests
+	  - shogi_server/player.rb: Help the write_thread to terminate
+
+2010-05-06  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Previously mk_rate did not count in draw games. Now a draw game
+	    is considered to weight 0.5 win and 0.5 loss. Respect
+	    Inaniwa-shogi which strategically aims to draw.
+	  - a new command line option, --skip-draw-games. In this mode, draw
+	    games are just ignored as mk_rate previously did.
+
+2010-04-25  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/player.rb:
+	    Log a warning message in a case that a player closes a
+	    connection suddenly.
+
+2010-04-13  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb:
+	    Equality of MonitorHandler class was wrong. %%MONITOROFF and
+	    %%MONITOR2OFF may cause unexpected behavior. This issue has been
+	    fixed. Thanks to Kota Fujiwara for reporting.
+
+2010-03-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - If two sequential moves from a player are identical, the last
+	    one will be ignored and a game is in play. This situation might
+	    happen with human players, especially on slow network,
+	    impatiently sending a move twice. 
+
+2010-02-27  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The server now provides more accurate time control. Previously,
+	    a player's thinking time included a time waiting to get the giant
+	    lock. This may have caused games to time up, especially, during
+	    byo-yomi etc.
+
+2010-01-22  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Experimental feature: support handicapped games.
+	    Game names that have the following prefixes are recognized as
+	    handicapped games. Turn symbols "+" and "-" mean Uwate (expert)
+	    and Shitate (beginner) respectively (i.e. Uwate players first).
+	    "*" is not available. 
+	    - hclance_
+	    - hcbishop_
+	    - hcrook_
+	    - hcrooklance_
+	    - hc2p_
+	    - hc4p_
+	    - hc6p_
+	    - hc10p_
+
+2010-01-16  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb, test/TC_command.rb
+	    Proposal implementation of a new command called MONITOR2{ON,OFF}.
+	    When the MONITOR2ON command is issued by a player, the server
+	    immediately sends the player the entire contents of a record
+	    file of the game, i.e. history of moves and so on, at that time.
+	    Then, the server will forward subsequent moves like they are
+	    appended to the record file.
+	  - Behavior changed: A player monitoring a game with MONITORON will
+	    not receive Game#show again when a gaming player resigns (:toryo).
+
+2010-01-10  Daigo Moriwaki <daigo at debian dot org>
+
+	* Converted the repository from Subversion to Git.
+
+2009-12-26 Daigo Moriwaki <daigo at debian dot org> 
+
+	* [shogi-server]
+	  - The server can now provide multiple floodgate modes such as
+	    floodgate-900-0 and floodgate-3600-0.
+
+2009-12-25 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi-server: The command line option --floodgate-history has
+	    been deprecated. The server will decide history file names such
+	    as 'floodgate_history_900_0.yaml' and
+	    'floodgate_history_3600_0.yaml', and then put them in the top
+	    directory.
+
+2009-12-20 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/player.rb: Added new methods: is_human? and
+	    is_computer?. 
+	    A human player is recommended to use a name ending with '_human'.  
+	    ex. 'hoge_human', 'hoge_human@p1'
+	  - shogi_server/pairing.rb: Added a new class:
+	    StartGameWithoutHumans, which tries to make pairs trying to
+	    avoid a human-human match. This is now enabled instead of the
+	    previous class: StartGame.
+	  - shogi-server, shogi_server/league/floodgate.rb:
+	    Changed the argument of Floodgate.new.
+
+2009-12-04 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The HUP signal is not supported by Ruby on Windows.
+
+2009-11-11 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Added a new command line option: --base-date. You can specify a
+	    base date to calculate rating scores. Games in the `future' are
+	    ignored for the calculation.
+
+2009-11-10 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The server logs a result of each game to a file named '00LIST',
+	    which will be used to generate players.yaml. If the file does
+	    not exist, the server will create one automatically.
+	    Instruction to use the game result list file:
+	    1. Make a list of game results from existing CSA files with
+	       mk_game_results
+	       % ./mk_game_results dir_of_csa_files > 00LIST
+	    2. Run the server. It appends a result of each game to
+	       '00LIST' when the game finishes.
+	    3. From the list of game results, calculate rating scores of
+	       players.
+	       % ./mk_rate 00LIST > players.yaml
+
+2009-11-08 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Split a pre-process collecting game results from csa files into
+	    a new command, mk_game_results. Now, Generating players.yaml
+	    requires two steps as follows:
+	      % ./mk_game_results dir_of_csa_files > 00LIST
+	      % ./mk_rate 00LIST > players.yaml
+	      or
+	      % ./mk_game_results dir_of_csa_files | ./mk_rate > players.yaml 
+	    (Closes: #19454)
+
+2009-08-06 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A experimental new feature, codenamed Buoy: it allows players to
+	    play a game starting with a specified position. First, a player
+	    sets a buoy game with moves to a specific position. Then, two
+	    players can play a new game with the game name.
+	    New commands:
+	    + %%SETBUOY <game_name> <moves> [count]
+	      Set a new buoy game.
+	      ex. %%SETBUOY buoy_foo-900-0 +7776FU 10
+	      ex. %%SETBUOY buoy_foo-1500-0 +7776FU-3334FU
+	      - game_name is a valid game name with a prefix "buoy_".
+	      ex. buoy_foo-900-0
+	      - moves are initial moves from the Hirate position to a
+	      specific position that you want to start with.
+	      ex. +7776FU-3334FU+8786FU
+	      - count is an optional attribute to tell how many times the
+	      game can be played (default 1). The count is decremented
+	      when the game finishes. If the count reaches zero, the buoy
+	      game is removed automatically by the server.
+	      ex. 10
+	    + %%DELETEBUOY <game_name>
+	      Delete a buoy game. The only owner who set up the game is
+	      allowed to delete it.
+	      ex. %%DELETEBUOY buoy_foo-900-0
+	      - game_name is the buoy game name that was created.
+	    + %%GETBUOYCOUNT <game_name>
+	      Show a current count of the buoy game or -1 for non-existing
+	      games.
+
+
+2009-07-11 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/command.rb: refactored commands out of player.rb.
+
+2009-06-18 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - An empty floodgate_history.yaml caused a server error. This
+	    issue has been fixed. 
+	    (Closes: #15124)
+
+2009-06-17 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - If a new game matched between two players is not started within
+	    a certain time (default 120 seconds) (i.e. the agree_waiting or
+	    start_waiting state lasts too long), the Server REJECTs the game.
+	    (Closes: #14425)
+
+2009-06-15 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - When a Gote player AGREEd a new game and then a Sente player
+	    logged out (LOGOUT), the Gote incorrectly received a LOGOUT message 
+	    from the server. Since Gote's state was not AGREEd or STARTed yet,
+	    the Gote should be REJECTed. This issue has been fixed. 
+	    (Closes: #17335)
+
+2009-06-14 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The Board could not recognize a certain pattern of
+	    Oute-Sennichite. This issue has been fixed.
+	    (Closes: #13966)
+
+2009-03-22 Daigo Moriwaki <daigo at debian dot org>
+
+	* [utils/correct-bug14635.rb]
+	  - Added a new file. This program corrects illegal lines introduced
+	    by the #14635 bug.
+
+2009-03-07 Daigo Moriwaki <daigo at debian dot org>
+
+	* [csa-file-filter]
+	  - Improved performance.
+
+2009-02-15 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A duplicated comment that is the one of the previous (or older)
+	    move might be erroneously recorded in a csa file. This issue has 
+	    been fixed. (Closes: #15080)
+
+2009-02-11 Daigo Moriwaki <daigo at debian dot org>
+
+	* [utils/csa-filter.rb]
+	  - Added a new file. This program filters CSA files.
+
+2009-02-01 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The shogi-server records csa files of games in an illegal
+	    format. This issue has been fixed. (Closes: #14635)
+	  - A ##[MONITOR] command for showing a game result such as %TORYO
+	    was not correct. This issue has been fixed.  
+
+2009-01-13 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - It failed to proccess a game result, OuteKaihiMoreWin where a
+	    checked king does not escape. This issue has been fixed.
+
+2009-01-02 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - shogi_server/timeout_queue.rb: the timeout parameter of the
+	    constructor was not respected erroneously. This issue
+	    has been fixed.
+	  - shogi_server/players.rb: When a player was finishing with its
+	    write socket broken, there was a chance that the thread of the
+	    player in the giant lock had to wait for a long time (about 20
+	    seconds), which might cause threads of other players stop and 
+	    time out. (Closes: #14469)
+
+2008-12-30 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	  - Added a new option: --footer filename, which inserts contents of 
+	    the filename at the bottom of a generated page. A text specific to 
+	    wdoor should be written by using this option. 
+	    (Closes: #14470)
+	  - It does no more depend on RDoc. RDoc::usage does not work well
+	    (due to RDoc).
+
+2008-12-28 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Check kifu files more carefully so that files that contain
+	    incomplete records are skipped.
+	  - mk_rate might have failed to alloc due to out of memory. Now it
+	    consumes less memory (about 200MB instead of 2GB).
+	  - File names can be put into STDIN instead of specifying directory
+	    names in command line arguments.
+	* [csa-file-filter]
+	  - New file. It filters kifu files and is of use for a pre-filter
+	    of mk_rate.
+
+2008-12-13 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Improved an existance check and etc. of directories specified
+	    by command line options, especially in case of the daemon mode. 
+	    (Closes: #14244)
+	  - A rotated log file is moved to $topdir/YYYY/MM/DD.
+	    (Closes: #14245)
+
+2008-11-27 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added sample/*.sh for command line samples.
+
+2008-11-24 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added a new option --floodgate-history, which allows users to
+	    specify a file name that stores the records of games. The
+	    records are taken care of when games are matched.
+
+2008-10-18 Daigo Moriwaki <daigo at debian dot org>
+
+	* [utils/eval_graph.rb]
+	  - Display time control graphs as well.
+	    Thanks to Nishimura-san for this idea.
+	    (Closes: #13678)
+
+2008-10-08 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Ruby 1.8.7 (or later) must be used. Ruby 1.8.6 is not supported.
+	  - Daemon mode is available.
+	  - shogi_server/piece_ky.rb is again merged with
+	    shogi_server/piece.rb, then has been removed.  
+	  - Added a test case, TC_usi.rb.
+
+2008-06-30 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added a new option --player-log-dir, which allows users to log
+	    messages that are received or sent to the wire.
+
+2008-06-28 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A rating comment line is now written before the first move in a
+	    record file instead of after the last move, which allows other
+	    applications watching a game to recognize players in the middle 
+	    of the game. (Closes #12821)
+	  - If a player, including a monitor, stuck at the time of sending
+	    messages to the wire, which means that the giant lock was locked,
+	    it might have prevented other players from processing until
+	    timeout occurred. This issue has been fixed. (Closes #12555)
+
+2008-06-27 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  -  Pairing players might not have shuffled players because of
+	     poor shuffling algorithm. This issue has been fixed.
+	     (Closes: #12661)
+
+2008-06-25 Daigo Moriwaki <daigo at debian dot org>
+
+	* [players_graph.rb]
+	  - Check invalid arguments. (Closes: #12856)
+
+2008-06-23 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Added a new option: --fixed-rate and --fixed-rate-player
+	    whose rate always results in that rate. (Closes: #12800)
+
+2008-06-06 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The source has been splited to multiple sub files.
+	  - The program now depends on rubygems and activesupport.
+	  - The program can reload the source files on the flight, by
+	    sending a HUP signal to the server.
+	  - The server log will be rotated daily.
+
+2008-05-18 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Last game results (win or lose) of x1 players were not
+	    available on the next game. This issue has been fixed.
+	    Thanks to Tomoyuki Kaneko for debugging.
+	  - For draw games, "'rating" line in a .csa file was 
+	    wrong (meaningless). This issue has been fixed.
+
+2008-05-16 Daigo Moriwaki <daigo at debian dot org>
+
+	* [news]
+	  - The repository has been converted from CVS to Subversion.
+
+2008-05-13 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Floodgate's thread could cause an error when players.yaml was
+	    cleared by another program (mk_rate). This issue has been 
+	    fixed.
+	  - Give default values to BasicPlayer, which fixed undefined 
+	    method error in Pairing.
+
+2008-05-10 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The server could not recognize uchifuzume as an illegal move.
+	    This bug has been fixed.
+	  - The server crashed by an undefined method error.
+	    This issue has been fixed.
+
+2008-05-05 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - .csa files will be located in a sub directory such as
+	    "2008/05/05/*.csa". These days, we have many games in a day. 
+	    This change will help users browse a file list.
+
+2008-05-03 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	  - Show players who have accessed in the last 30 minutes with 
+	    different colors.
+
+2008-04-22 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	  - When YSS was not rated on the wdoor mode, wrong rate24 scores
+	    were displayed. This issue has been fixed. Now YSS absence 
+	    results in "N/A".
+
+2008-04-21 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - The half-life period is now configurable.
+	    ex $ ./mk_rate --half-life 14 --half-life-ignore 7 <records>
+
+2008-04-12 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Renamed variables (@id) since they caused Ruby's warning.
+
+2008-04-11 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Improved a way to handle diferred moves (2008-03-24's change),
+	    based on Tomoyuki Kaneko's patch.
+
+2008-04-01 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - An incorrect LOGIN crashed the server. This issue has been
+	    fixed.
+
+2008-03-24 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Converting characters for comments in moves caused an error. This 
+	    issue has been fixed.
+	  - If a player moves in the opponent's turn, it is illegal. But the
+	    current CSA protocol does not clearly define a way to tell so to 
+	    the players. This shogi-server internally keeps such a move in a
+	    buffer and replay it when the player of the move gets his/her 
+	    turn.
+
+2008-03-16 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Erroneously, Board#to_s's current player was always Black.
+	    It caused wrong determination of sennichite since it did not
+	    care about the current player of a state. This has been fixed.
+	    Thanks Takada-san for reporting this bug.
+
+2008-03-10 Daigo Moriwaki <daigo at debian dot org>
+
+	* [util/players-graph.rb]
+	  - Applied Kaneko-san's patch, which also shows expected-rate24
+	    rates.
+	  - Small PNG gets smaller.
+
+2008-03-08 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	- Added an option --wdoor. In this mode, a rate expected at Shogi
+	  Club 24 is calculated from YSS's rating (he is 2400 now). 
+
+2008-03-04 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - If the computed ratings do not stabilize, then mk_rate aborts.
+	      $ ./mk_rate dir && ./mk_rate dir > players.yaml 
+	    can avoid rewriting the invalid ratings to the file.
+
+2008-02-23 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - A comment is converted to EUC-JP and then written in a log.
+	    Note that this conversion guesses the input encoding. Clients
+	    are recommended to send EUC-JP compatible strings to the
+	    server.
+
+2008-02-21 Daigo Moriwaki <daigo at debian dot org>
+
+	* [util/players-graph.rb]
+	  - Released. Draw a chart for a player's rating score.
+
+2008-02-17 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - An illegal teban specified for Floodgate login could crash the
+	    server. This issue has been fixed.
+
+2008-02-16 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Thread.abort_on_exception is now false, meaning that 
+	    a thread's abort does not affect the others. 
+	  - The uchifuzume check did not generate promoting moves, which
+	    could crash the server with illegal moves. This issue has
+	    been fixed.
+
+2008-02-14 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Added a new pairing variation, Swiss-like style. Winners at the
+	    previous games (his/her point of view, not the server's) are 
+	    paired first, and then the others are matched. This is the 
+	    default option now.
+	  - Pairing classes are located in a separate source file,
+	    pairing.rb. The file is 'load'ed each time to be used,
+	    meaning that modifying the code will be applied to a running
+	    server.
+	  - You can specify a single player who will be out of pairing
+	    when there are odd players waiting for Floodgate.
+
+2008-02-13 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - When there are odd players wating for Floodgate, the random
+	    pairing deletes the player who has ever played the most games.
+
+2008-02-08 Daigo Moriwaki <daigo at debian dot org>
+
+	* [ml_html]
+	  - For the Not-Yet-Rated group, those who have not connected
+	    recently are not listed.
+	* [shogi-server]
+	  - Floodgate's thread checks the current time each 10 secs.
+
+2008-02-05 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] [mk_html]
+	  - Display not-yet-rated players as well.
+	* [mk_html]
+	  - Use Yahoo! UI Library.
+
+2008-02-04 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] [webserver]
+	  - In the daemon mode, if the specified directory was a relative
+	    path, the server could fail to start with a permission denied
+	    error. This issue has been fixed. The path is interpreted as 
+	    an absolute path before switching to daemon. 
+	  - In the daemon mode, a wrong process id was written in 
+	    '--pid-file'. This issue has been fixed. Also, the pid file
+	    will be removed when the server shuts down.
+
+2008-02-03 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Game names that are recognized as the floodgate mode are now 
+	    /^floodgate-\d+-\d+$/.
+	  - Floodgate could not schedule the next time when it was the next
+	    day. This issue has been fixed.
+
+2008-02-02 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Implemented a new feature, Floodgate mode, for covenience with
+	    public rating games. Now there is a special game "wdoor-900-0".
+	    Matching players for that game is scheduled each 30 minitues.
+
+2007-11-03 Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	 - Support Ruby 1.8.6 patch level 111 (or higher) and GSL 1.10 (or higher).
+	   It may not work with lower verions. 
+
+2007-09-06 Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - The logic to detect Oute-Sennichite was not complete. Both players
+	    (checking side and escaping side) may cause Oute-Sennichite. The old
+	    logic only cared for the checking player. This issue has been fixed.
+
+2007-06-16  Daigo Moriwaki <daigo at debian dot org>
+
+	* [webserver]
+	  - Initial version. This web server is an interface between HTTP and
+	    shogi-server. Shogi-server commands will be available over HTTP. As
+	    of now %%LIST and %%WHO commands are supported.
+	* [mk_rate]
+	  - Bumped up GAME_LIMIT (from 10) to 15 because the calculation of
+	    rates sometimes went wrong (infinite values).
+
+2007-04-21  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Implemented `CHALLENGE' command, and the server will respond with
+	    `CHALLENGE ACCEPTED'. Note that this command is dummy for this server
+	    because it is only available for CSA's official testing server and does
+	    not belong to the CSA standard protocol.  Therefor, when clients receive
+	    `CHALLENGE ACCEPTED' from this server, they must ignore it.
+	  - Show revision in a start up message.
+
+2007-04-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Implemented one of the keepalive protocol in CSA protocol; If clients
+	    send LF, the server sends back LF.
+	  - More care for socket errors.
+
+2007-03-27  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] When there were too few games to rate players (i.e. no
+	  player to rate), mk_rate caused an error. Now it no longer shows
+	  the error.
+
+2007-03-10  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html] Popup shows additional information.
+
+2007-03-02  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Use WEBrick for server framework.
+	  - Daemon mode is available.
+
+2007-02-26  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Failed to show usage. This issue has been fixed. 
+	  - Initial start of the server failed beacause of empty players.yaml.
+	    This issues has been fixed.
+
+2007-02-18  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_html]
+	  - Show groups in the order specified in players.html.
+	  - Players who gamed recently have a background color.
+	* [mk_rate]
+	  - Implemented half-life effect. Numbers of win/lose decrease by this effect.
+
+2006-11-26  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Sente (gote) was able to move gote's (sente's) hand.
+	  That move should be illegal. This issue has been fixed.
+
+2006-11-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] Skip "abnormal" games, which were finished because of
+	  network failure or communication error.  Recently some programs seem
+	  to have a lot of tries to connect to the Shogi Server at wdoor for
+	  debugging. We should ignore such games for a while to get a meaningful
+	  ratings.
+
+2006-10-30  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate][mk_html]
+	  - Put players into "connected" groups in order to
+	    show a correct, meaningful rating. In the group, each player has at
+	    least a game with other players.
+	  - The format of players.yaml was updated.
+	* [shogi-server] Followed the new format of players.yaml.
+
+2006-10-08  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] Corrected making win_loss_matrix.
+
+2006-10-02  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] players who never win or lose are not rated in order
+	  the calculation to complete.
+
+2006-09-30  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] The CSA mode supports the trip in a password.
+
+2006-09-22  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server] Refactored the login procedures.
+
+2006-09-21  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] It failed parse draw games. Now this bug has been fixed.
+	* [mk_html] Add CSS to look better.
+
+2006-09-15  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Remove the trip in a password. Now the password is hashed.
+	* [mk_rate]
+	  - Support @NORATE syntax in a name, which avoids the player is
+	    rated.
+
+2006-09-09  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Support a new command, %%VERSION. It shows the server's revision#.
+
+2006-09-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* [shogi-server]
+	  - Re-design: trip is now a suffix of the password, not name.
+	  - Simplified the output of %%RATING.
+	* [mk_rate]
+	  - Support "@" indentificaton in a name; players with same
+	    before-@-names are mapped to one.
+
+2006-09-05  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] Fix a bug. It solves the correct rate.
+
+2006-08-18  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] Re-design. 
+	  - Correct the equations.
+	  - Apply deaccelerated Newton method.
+
+2006-08-16  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate]
+	  - Fix a bug. Now it can see black/white players in a csa file.
+	* [shogi-server]
+	  - Add a space in the output of %%RATING.
+
+2006-08-14  Daigo Moriwaki <daigo at debian dot org>
+
+	* [mk_rate] Record numbers of win/loss games.
+	* Add mk_html, which generates html from players.yaml
+	* Fix test/test_board.rb. Now it works. 
+	* Add test/TC_ALL.rb to run all test cases.
+	* [shogi-server] Fix a bug. Now it can show %%RATING even if it has no
+	  rated player.
+
+2006-08-11  Daigo Moriwaki <daigo at debian dot org>
+	
+	* Add mk_rate, which calculate rating scores.
+
+2006-08-10  Daigo Moriwaki <daigo at debian dot org>
+
+	* Change the style of a comment line on the rated game.
+
+2006-08-07  Daigo Moriwaki <daigo at debian dot org>
+
+	* Change the player id, which is now <name>+<hash_of_the_trip>.
+	* Fix the max length of the login name with a trip.
+	* Add a comment line about the rated game status in the CSA file.
+	* Remove the rating system, which will be calculated by another
+	  program.
+
+2006-08-01  Daigo Moriwaki <daigo at debian dot org>
+
+	* Add a command, %%RATING, to show a ranking sorted by rates.
+
+2006-07-31  Daigo Moriwaki <daigo at debian dot org>
+
+	* Add a simple rating system.
+
+2006-07-30  Daigo Moriwaki <daigo at debian dot org>
+
+	* Add a @move_counter in Board class, which is used by Shogi Viewer
+	  CGI.
+
+2006-04-28  Daigo Moriwaki <daigo at debian dot org>
+
+	* Jishogi kachi declaration did not work. This bug has been fixed.
+	  Add debug lines to show a jishogi state.
+
+2006-04-08  Daigo Moriwaki <daigo at debian dot org>
+
+	* Support CSA Protocol Version 1.1.
+	* Change the declaration of Jishogi 1.1.
+
+2006-03-10  Daigo Moriwaki <daigo at debian dot org>
+
+	* Kifu logs are always written in separate files.
+	* Add a test case, test/TC_functional.rb
+	* Some refactorings.
+	
