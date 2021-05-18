@@ -26,10 +26,11 @@ class TestClientAtmark < BaseClient
     month = now.strftime("%m")
     day   = now.strftime("%d")
     path = File.join( File.dirname(__FILE__), "..", year, month, day, "*atmark-1500-0*")
-    log_files = Dir.glob(path)
-    assert(!log_files.empty?) 
+    puts path # (^q^)
+    csa_files = Dir.glob(path)
+    assert(!csa_files.empty?) # ????????????????OK?????
     sleep 0.1
-    log_content = File.read(log_files.sort.last)
+    log_content = File.read(csa_files.sort.last)
 
     # "$EVENT", "$START_TIME" and "'$END_TIME" are removed since they vary dinamically.
     should_be = <<-EOF
@@ -95,10 +96,10 @@ class TestHandicappedGame < BaseClient
     month = now.strftime("%m")
     day   = now.strftime("%d")
     path = File.join( File.dirname(__FILE__), "..", year, month, day, "*hc2p_hoge-1500-0*")
-    log_files = Dir.glob(path)
-    assert(!log_files.empty?) 
+    csa_files = Dir.glob(path)
+    assert(!csa_files.empty?) 
     sleep 0.1
-    log_content = File.read(log_files.sort.last)
+    log_content = File.read(csa_files.sort.last)
 
     # "$EVENT", "$START_TIME" and "'$END_TIME" are removed since they vary dinamically.
     should_be = <<-EOF
