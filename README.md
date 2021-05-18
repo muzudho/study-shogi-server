@@ -6,6 +6,13 @@
 `2020-12-06	Daigo Moriwaki	[shogi-server] Bump up the revision to 20201206 `  
 👆 これを持ってきたぜ（＾～＾）  
 
+## Vmmem
+
+```shell
+# Vmmemにメモリを占拠されたら、強制終了（＾～＾）
+wsl --shutdown
+```
+
 ## Test
 
 ```shell
@@ -23,6 +30,9 @@ docker ps
 
 # テストをするために Dockerコンテナに入れだぜ（＾～＾）
 docker exec -it <CONTAINER ID> /bin/bash
+
+# もしサーバーが立っていなければ（＾～＾）
+# ruby shogi-server hoge 4000 &
 
 cd test
 

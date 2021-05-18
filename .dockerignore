@@ -1,22 +1,22 @@
 Dockerfile
 .dockerignore
 .git
-.*
-00LIST
-logs
-20*
-**/20*
-**/*.log
+# .*
+# 00LIST
+# logs
+# 20*
+# **/20*
+# **/*.log
 
-**/*.yaml
+# **/*.yaml
 # テストで使ってるし（＾～＾）
-!/test/players.yaml
+# !/test/players.yaml
 
-**/*.conf
+# **/*.conf
 
-**/*.sh
+# **/*.sh
 # Docker起動後の初期化でスクリプト使うと読みやすいんで（＾～＾）
-!/docker-entrypoint.sh
+# !/docker-entrypoint.sh
 
-**/*.back
-**/*.dat
+# **/*.back
+# **/*.dat
