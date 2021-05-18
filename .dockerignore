@@ -1,14 +1,14 @@
 Dockerfile
 .dockerignore
 .git
-.*
-00LIST
-logs
-20*
-**/20*
-**/*.log
-**/*.yaml
-**/*.conf
-**/*.sh
-**/*.back
-**/*.dat
+# .*
+# 00LIST
+# logs
+# 20*
+# **/20*
+# **/*.log
+# **/*.yaml
+# **/*.conf
+# **/*.sh
+# **/*.back
+# **/*.dat
