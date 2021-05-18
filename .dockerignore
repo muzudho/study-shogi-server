@@ -1,16 +1,22 @@
-!shogi_server/logs/shogi_server.log
-
 Dockerfile
 .dockerignore
 .git
-# .*
-# 00LIST
-# logs
-# 20*
-# **/20*
-# **/*.log
-# **/*.yaml
-# **/*.conf
-# **/*.sh
-# **/*.back
-# **/*.dat
+.*
+00LIST
+logs
+20*
+**/20*
+**/*.log
+
+**/*.yaml
+# テストで使ってるし（＾～＾）
+!/test/players.yaml
+
+**/*.conf
+
+**/*.sh
+# Docker起動後の初期化でスクリプト使うと読みやすいんで（＾～＾）
+!/docker-entrypoint.sh
+
+**/*.back
+**/*.dat

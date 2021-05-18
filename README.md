@@ -6,6 +6,31 @@
 `2020-12-06	Daigo Moriwaki	[shogi-server] Bump up the revision to 20201206 `  
 👆 これを持ってきたぜ（＾～＾）  
 
+## Test
+
+```shell
+# ここに置いておくとするぜ（＾～＾）
+cd c:\GitHub\shogi-server
+
+docker build . -t muzudho/shogi-server-test -f Dockerfile-test
+
+docker images
+
+# テストしたいときは 4000番ポート（＾～＾）
+docker run -d -p 4000:4000 -e "TZ=Asia/Tokyo" muzudho/shogi-server-test
+
+docker ps
+
+# テストをするために Dockerコンテナに入れだぜ（＾～＾）
+docker exec -it <CONTAINER ID> /bin/bash
+
+cd test
+
+ruby TC_ALL.rb
+
+exit
+```
+
 ## Run
 
 ```shell
@@ -13,29 +38,16 @@
 cd c:\GitHub\shogi-server
 
 docker build . -t muzudho/shogi-server
-# テストのとき
-# docker build . -t muzudho/shogi-server-test -f Dockerfile-test
 
 docker images
 
 # 将棋所から接続したいときは 4081番ポート（＾～＾）
 docker run -d -p 4081:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server
-# テストしたいときは 4000番ポート（＾～＾）
-# docker run -d -p 4000:4000 -e "TZ=Asia/Tokyo" muzudho/shogi-server-test
 
 docker ps
 
-# テストをするために Dockerコンテナに入れだぜ（＾～＾）
+# 調べたけりゃ Dockerコンテナに入れだぜ（＾～＾）
 docker exec -it <CONTAINER ID> /bin/bash
-
-# なんか将棋サーバー立ってないので、立てろだぜ（＾～＾）ただし、この立て方は本番用ではなく、テストの一時用な（＾～＾）
-ruby shogi-server hoge 4000 &
-jobs
-[1]+  Running                 ruby shogi-server hoge 4000 &
-
-cd test
-
-ruby TC_ALL.rb
 
 exit
 ```

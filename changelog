@@ -1,3 +1,11 @@
+2021-05-18  Satoshi Takahashi <muzudho at gmail dot com>
+
+	* [.dockerignore] Add "!test/players.yaml" for testing purposes.
+	  The "!docker-entrypoint.sh" was added for readability.
+	* [Dockerfile] I just changed the CMD to ENTRYPOINT as I am used to using it.
+	* [Dockerfile-test] Separate Dockerfile for testing.
+	* [docker-entrypoint.sh] Added because I'm easy to read.
+
 2020-12-06  Daigo Moriwaki <daigo at debian dot org>
 
 	* [shogi-server] Improve timed-up detection (continued).
