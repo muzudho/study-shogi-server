@@ -14,10 +14,13 @@ ENV EVENT local
 ENV PORT 4081
 ENV MAX_IDENTIFIER 32
 
-# １階層目にログ・ディレクトリを置きます
+# １階層目には、テスト用のログ・ディレクトリを置きます（場所固定）
 WORKDIR /logs
 
-# １階層目にshogi-serverディレクトリを置きます
+# ２階層目には、サーバー用のログ・ディレクトリを置くように合わせます
+WORKDIR /shogi-server/logs
+
+# １階層目に戻ります
 WORKDIR /shogi-server
 
 RUN gem install rgl
