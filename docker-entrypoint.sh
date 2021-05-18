@@ -4,5 +4,5 @@
 
 cd /shogi-server
 
-# パスを絶対パスにしないといけなくなってしまった（＾～＾）
-ruby shogi-server --daemon /shogi-server/logs --max-identifier $MAX_IDENTIFIER $EVENT $PORT & tail -F /shogi-server/logs/shogi-server.log
+# logsディレクトリは１階層目に置くようだぜ（＾～＾）絶対パスで指定するぜ（＾～＾）
+ruby shogi-server --daemon /logs --max-identifier $MAX_IDENTIFIER $EVENT $PORT & tail -F /logs/shogi-server.log
