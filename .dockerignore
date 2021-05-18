@@ -1,3 +1,5 @@
+!shogi_server/logs/shogi_server.log
+
 Dockerfile
 .dockerignore
 .git

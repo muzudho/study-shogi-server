@@ -19,9 +19,9 @@ docker build . -t muzudho/shogi-server
 docker images
 
 # 将棋所から接続したいときは 4081番ポート（＾～＾）
-docker run -p 4081:4081 -e TZ=Asia/Tokyo -d muzudho/shogi-server
+docker run -d -p 4081:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server
 # テストしたいときは 4000番ポート（＾～＾）
-# docker run -p 4000:4000 -e TZ=Asia/Tokyo -d muzudho/shogi-server-test
+# docker run -d -p 4000:4000 -e "TZ=Asia/Tokyo" muzudho/shogi-server-test
 
 docker ps
 
