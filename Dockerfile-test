@@ -5,10 +5,16 @@ LABEL original_maintainer="Daigo Moriwaki <daigo@debian.org>"
 RUN apt-get update && apt-get install -y \
         ca-certificates \
         apt-utils \
-        ruby ruby-gsl
+        ruby ruby-gsl \
+        # デバッグで使うので追加（＾～＾）
+        curl \
+        iproute2 \
+        vim
+
 
 ENV EVENT local
-ENV PORT 4081
+# Test
+ENV PORT 4000
 ENV MAX_IDENTIFIER 32
 
 WORKDIR /shogi-server
@@ -19,4 +25,4 @@ RUN gem install rgl
 COPY . ./
 
 EXPOSE $PORT
-CMD ./shogi-server --daemon /logs --max-identifier $MAX_IDENTIFIER $EVENT $PORT & tail -F /logs/shogi-server.log
+CMD ./shogi-server --daemon /logs --max-identifier $MAX_IDENTIFIER $EVENT $PORT -e TZ=Asia/Tokyo & tail -F /logs/shogi-server.log
