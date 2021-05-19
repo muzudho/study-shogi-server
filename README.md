@@ -6,12 +6,11 @@
 `2020-12-06	Daigo Moriwaki	[shogi-server] Bump up the revision to 20201206 `  
 👆 これを持ってきたぜ（＾～＾）  
 
-## Vmmem
+## Portについて
 
-```shell
-# Vmmemにメモリを占拠されたら、強制終了（＾～＾）
-wsl --shutdown
-```
+CSAの純正のCSAプロトコルでWCSCにつなぐときは 将棋所の無印 `サーバー通信対局...` を使えだぜ（＾～＾）ポート番号は 4081（＾～＾）  
+floodgateの拡張CSAプロトコルでFloodgateにつなぐときは 将棋所の `サーバー通信対局(floodgate)...` を使えだぜ（＾～＾）ポート番号は 4000（＾～＾）  
+コードのユニットテストを走らせるときは ポート番号 4000 を使ってるぜ（＾～＾）  
 
 ## Test
 
@@ -68,6 +67,15 @@ exit
 docker ps
 
 docker stop <CONTAINER ID>
+```
+
+## Vmmem
+
+Dockerを使っているときに大量にメモリを占有されるぜ（＾～＾）花見の場所取りみたいなもんだな（＾～＾）  
+
+```shell
+# Vmmemが嫌になったら、強制終了（＾～＾）
+wsl --shutdown
 ```
 
 ## References
