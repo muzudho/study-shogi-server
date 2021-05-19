@@ -14,9 +14,6 @@ ENV EVENT local
 ENV PORT 4081
 ENV MAX_IDENTIFIER 32
 
-# １階層目に、デーモン用のログ・ディレクトリを置きます
-RUN mkdir /logs
-
 # １階層目にディレクトリを作ります
 WORKDIR /shogi-server
 

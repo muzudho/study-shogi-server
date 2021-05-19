@@ -8,7 +8,7 @@ cd /shogi-server
 # デーモンのログ・ファイルを先に作っておいてしまおう（＾～＾）
 touch shogi-server.log
 
-# ファイル名やディレクトリ名が同じのあって　ややこしいんで絶対パスで指定するぜ（＾～＾）
+# "--daemon" には "." と書かずに絶対パスを指定しろだぜ（＾～＾）
 ruby shogi-server $EVENT $PORT --daemon /shogi-server --max-identifier $MAX_IDENTIFIER
 
 # Dockerを常駐させておくためだけの無限ループだぜ（＾～＾）
