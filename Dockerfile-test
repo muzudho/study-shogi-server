@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y \
         vim
 
 
-ENV EVENT muzudho_test
+# ENV EVENT muzudho_test
 # Test
-ENV PORT 4000
-ENV MAX_IDENTIFIER 32
+# ENV PORT 4000
+# ENV MAX_IDENTIFIER 32
 
 # １階層目にディレクトリを作ります
 WORKDIR /shogi-server
@@ -27,7 +27,7 @@ RUN gem install rgl
 
 COPY . ./
 
-EXPOSE $PORT
+# EXPOSE $PORT
 
 # CMD で１行で書くと見づらいのでファイルに分けたぜ（＾～＾）
 ENTRYPOINT ["./docker-entrypoint-test.sh"]

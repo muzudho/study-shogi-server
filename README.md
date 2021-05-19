@@ -12,35 +12,8 @@ CSAの純正のCSAプロトコルでWCSCにつなぐときは 将棋所の無印
 floodgateの拡張CSAプロトコルでFloodgateにつなぐときは 将棋所の `サーバー通信対局(floodgate)...` を使えだぜ（＾～＾）ポート番号は 4000（＾～＾）  
 コードのユニットテストを走らせるときは ポート番号 4000 を使ってるぜ（＾～＾）  
 
-## Test
+## Run a server
 
-```shell
-# ここに置いておくとするぜ（＾～＾）
-cd c:\GitHub\shogi-server
-
-docker build . -t muzudho/shogi-server-test -f Dockerfile-test
-
-docker images
-
-# テストしたいときは 4000番ポート（＾～＾）
-docker run -d -p 4000:4000 -e "TZ=Asia/Tokyo" muzudho/shogi-server-test
-
-docker ps
-
-# テストをするために Dockerコンテナに入れだぜ（＾～＾）
-docker exec -it <CONTAINER ID> /bin/bash
-
-# もしサーバーが立っていなければ（＾～＾）
-# ruby shogi-server hoge 4000 &
-
-cd test
-
-ruby TC_ALL.rb
-
-exit
-```
-
-## Run
 
 ```shell
 # ここに置いておくとするぜ（＾～＾）
@@ -50,18 +23,57 @@ docker build . -t muzudho/shogi-server
 
 docker images
 
-# 将棋所から接続したいときは 4081番ポート（＾～＾）
+# 将棋所から接続したいときは 純正CSAプロトコルなら 無印サーバー通信対局で 4081番、
 docker run -d -p 4081:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server
+# 拡張CSAプロトコルなら floodgateモードで 4000番ポート（＾～＾） テストも4000番ポート（＾～＾）
+# docker run -d -p 4000:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server
 
-docker ps
-
-# 調べたけりゃ Dockerコンテナに入れだぜ（＾～＾）
-docker exec -it <CONTAINER ID> /bin/bash
-
-exit
+# docker ps
+#
+# # 調べたけりゃ Dockerコンテナに入れだぜ（＾～＾）
+# docker exec -it <CONTAINER ID> /bin/bash
+#
+# # テストしたけりゃ、やれだぜ（＾～＾）
+# cd test
+# ruby TC_ALL.rb
+#
+# exit
 ```
 
-## Stop
+## Test
+
+サーバーが立っている間に行ってください。（もしかすると別のDockerコンテナで立てたサーバーを見に行ってないかもしれません）  
+
+Dockerコンテナの中で `localhost` を指すと そのDockerコンテナ自身を指してしまい、  
+別のDockerコンテナで動いている 将棋サーバー を指せませんので、いくつかのテストがエラーになります。  
+全てのテストを正しく行うには、 将棋サーバー が立っているDockerコンテナに入って `cd test`、 `ruby TC_ALL.rb` してください。  
+
+```shell
+# ここに置いておくとするぜ（＾～＾）
+cd c:\GitHub\shogi-server
+
+docker build . -t muzudho/shogi-server-test -f Dockerfile-test
+
+docker images
+
+# Dockerマシンのログを見ろだぜ（＾～＾）文字に色付いてなくて おもんないけどな（＾～＾）
+docker run -d -e "TZ=Asia/Tokyo" muzudho/shogi-server-test
+
+# docker ps
+#
+# # テストをするために Dockerコンテナに入れだぜ（＾～＾）
+# docker exec -it <CONTAINER ID> /bin/bash
+#
+# # この Dockerコンテナの中で サーバー立ててもいいしな（＾～＾）
+# # ruby shogi-server hoge 4000 &
+#
+# cd test
+# ruby TC_ALL.rb
+#
+# exit
+```
+
+## Stop a server
 
 ```shell
 docker ps

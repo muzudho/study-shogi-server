@@ -4,13 +4,16 @@
 
 # あとで --daemon で指定したディレクトリに、ログだけでなく、さまざまなファイルが出力されるぜ（＾～＾）
 # テストではファイルの出力先を shogi-server ディレクトリに合わせておく必要があるぜ（＾～＾）
-cd /shogi-server
+cd /shogi-server/test
+
+# テスト
+ruby TC_ALL.rb
 
 # デーモンのログ・ファイルを先に作っておいてしまおう（＾～＾）
 touch shogi-server.log
 
 # "--daemon" には "." と書かずに絶対パスを指定しろだぜ（＾～＾）
-ruby shogi-server $EVENT $PORT --daemon /shogi-server --max-identifier $MAX_IDENTIFIER
+# ruby shogi-server $EVENT $PORT --daemon /shogi-server --max-identifier $MAX_IDENTIFIER
 
 # Dockerを常駐させておくためだけの無限ループだぜ（＾～＾）
 tail -f ./shogi-server.log
