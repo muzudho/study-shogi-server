@@ -90,6 +90,15 @@ Dockerを使っているときに大量にメモリを占有されるぜ（＾�
 wsl --shutdown
 ```
 
+## Make doc
+
+```shell
+# ここに置いておくとするぜ（＾～＾）
+cd c:\GitHub\shogi-server
+
+make doc
+```
+
 ## References
 
 * [https://shogi-server.osdn.jp/](https://shogi-server.osdn.jp/)

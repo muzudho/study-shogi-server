@@ -1,0 +1,10 @@
+[2021-05-20 21:27:50] INFO  WEBrick 1.6.1
+[2021-05-20 21:27:50] INFO  ruby 2.7.3 (2021-04-05) [x64-mingw32]
+[2021-05-20 21:27:50] INFO  WEBrick::HTTPServer#start: pid=13940 port=4080
+[2021-05-20 21:31:14] INFO  going to shutdown ...
+[2021-05-20 21:31:14] INFO  WEBrick::HTTPServer#start done.
+[2021-05-20 21:31:20] INFO  WEBrick 1.6.1
+[2021-05-20 21:31:20] INFO  ruby 2.7.3 (2021-04-05) [x64-mingw32]
+[2021-05-20 21:31:20] INFO  WEBrick::HTTPServer#start: pid=20388 port=4080
+[2021-05-20 21:34:18] INFO  going to shutdown ...
+[2021-05-20 21:34:18] INFO  WEBrick::HTTPServer#start done.

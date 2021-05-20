@@ -70,7 +70,7 @@ class ShogiClient
 
   def gets_ok
     buf = ""
-    timeout(5) do
+    Timeout.timeout(5) do
       loop do
         s = @socket.gets
         break unless s
