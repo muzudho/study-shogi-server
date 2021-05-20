@@ -1,0 +1,68 @@
+# `Dockerfile-dev` - 本番環境に、curlとかviを入れたものだぜ（＾～＾）
+FROM debian:stretch-slim
+
+# 2020-12-06版より後
+LABEL maintainer="Satoshi Takahashi <muzudho1@gmail.com>"
+# 2020-12-06版以前
+LABEL original_maintainer="Daigo Moriwaki <daigo@debian.org>"
+
+RUN apt-get update && apt-get install -y \
+        ca-certificates \
+        apt-utils \
+        ruby ruby-gsl \
+        # 以降、デバッグでよく使うものを追加（＾～＾）本番では要らないぜ（＾～＾）
+        curl \
+        iproute2 \
+        vim
+
+## Rubyのバージョンを上げます　ここから
+RUN apt-get update && apt-get install -y \
+        git
+RUN mkdir -p "$(rbenv root)"/plugins
+RUN git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+RUN apt-get update && apt-get install -y \
+        wget
+RUN apt-get update && apt-get install -y \
+        gcc-6 \
+        autoconf \
+        bison \
+        build-essential \
+        libssl-dev \
+        libyaml-dev \
+        libreadline6-dev \
+        zlib1g-dev \
+        libncurses5-dev \
+        libffi-dev \
+        libgdbm3 \
+        libgdbm-dev
+# RUN rbenv install --list
+RUN rbenv install 2.7.3
+# RUN rbenv versions
+# * system (set by /root/.rbenv/version)
+#   2.7.3
+RUN rbenv global 2.7.3
+# RUN rbenv versions
+#   system
+# * 2.7.3 (set by /root/.rbenv/version)
+RUN export PATH="$(rbenv root)/shims:$PATH"
+# ruby --version
+# ruby 2.7.3p183 (2021-04-05 revision 6847ee089d) [x86_64-linux]
+RUN echo 'export PATH="$(rbenv root)/shims:$PATH"' >> ~/.bash_profile
+RUN echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+## Rubyのバージョンを上げます　ここまで
+
+ENV EVENT local
+ENV PORT 4081
+ENV MAX_IDENTIFIER 32
+
+# １階層目にディレクトリを作ります
+WORKDIR /shogi-server
+
+RUN gem install rgl
+
+COPY . ./
+
+EXPOSE $PORT
+
+# CMD で１行で書くと見づらいのでファイルに分けたぜ（＾～＾）
+ENTRYPOINT ["./docker-entrypoint.sh"]

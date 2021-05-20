@@ -1,8 +1,14 @@
+2021-05-21  Satoshi Takahashi <muzudho at gmail dot com>
+
+	* [showgame] Deleted. Please provide the images of the board and the
+	  rating values on another site.
+
 2021-05-18  Satoshi Takahashi <muzudho at gmail dot com>
 
 	* [.dockerignore] Add "!test/players.yaml" for testing purposes.
 	  The "!docker-entrypoint.sh" was added for readability.
-	* [Dockerfile] I just changed the CMD to ENTRYPOINT as I am used to using it.
+	* [Dockerfile] I just changed the CMD to ENTRYPOINT as I am used to
+	  using it.
 	* [Dockerfile-test] Separate Dockerfile for testing.
 	* [docker-entrypoint.sh] Added because I'm easy to read.
 

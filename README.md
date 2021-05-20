@@ -40,6 +40,35 @@ docker run -d -p 4081:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server
 # exit
 ```
 
+## Run a server (Dev mode)
+
+
+```shell
+# ここに置いておくとするぜ（＾～＾）
+cd c:\GitHub\shogi-server
+
+docker build . -t muzudho/shogi-server-dev -f Dockerfile-dev
+
+docker images
+
+# 将棋所から接続したいときは 純正CSAプロトコルなら 無印サーバー通信対局で 4081番、
+docker run -d -p 4081:4081 -e "TZ=Asia/Tokyo" muzudho/shogi-server-dev
+
+docker ps
+
+# 調べたけりゃ Dockerコンテナに入れだぜ（＾～＾）
+docker exec -it <CONTAINER ID> /bin/bash
+
+# なんか色々作業しろだぜ（＾～＾）
+#cd test
+#ruby TC_ALL.rb
+
+# 終わったら
+exit
+docker ps
+docker stop <CONTAINER ID>
+```
+
 ## Test
 
 サーバーが立っている間に行ってください。（もしかすると別のDockerコンテナで立てたサーバーを見に行ってないかもしれません）  
