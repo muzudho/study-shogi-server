@@ -6,6 +6,9 @@
 `2020-12-06	Daigo Moriwaki	[shogi-server] Bump up the revision to 20201206 `  
 👆 これを持ってきたぜ（＾～＾）  
 
+* [オリジナルの README の翻訳](./translation/README.md)
+* [山岡忠夫さんのshogi-server(20160409)からのブランチ](https://github.com/TadaoYamaoka/shogi-server)
+
 ## Portについて
 
 CSAの純正のCSAプロトコルでWCSCにつなぐときは 将棋所の無印 `サーバー通信対局...` を使えだぜ（＾～＾）ポート番号は 4081（＾～＾）  
